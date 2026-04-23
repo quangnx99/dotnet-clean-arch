@@ -5,15 +5,9 @@ using DotnetCleanArch.Domain.Products;
 
 namespace DotnetCleanArch.Application.Products.Commands.CreateProduct;
 
-internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, ProductId>
+internal sealed class CreateProductCommandHandler(IApplicationDbContext dbContext)
+    : ICommandHandler<CreateProductCommand, ProductId>
 {
-    private readonly IApplicationDbContext _dbContext;
-
-    public CreateProductCommandHandler(IApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async ValueTask<Result<ProductId>> Handle(
         CreateProductCommand command,
         CancellationToken cancellationToken)
@@ -26,8 +20,8 @@ internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProduc
         }
 
         var product = result.Value;
-        _dbContext.Products.Add(product);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        dbContext.Products.Add(product);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return Result<ProductId>.Success(product.Id);
     }

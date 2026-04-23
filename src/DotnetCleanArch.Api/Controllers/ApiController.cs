@@ -5,9 +5,7 @@ namespace DotnetCleanArch.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public abstract class ApiController : ControllerBase
+public abstract class ApiController(ISender sender) : ControllerBase
 {
-    protected readonly ISender Sender;
-
-    protected ApiController(ISender sender) => Sender = sender;
+    protected ISender Sender { get; } = sender;
 }

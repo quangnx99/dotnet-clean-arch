@@ -3,25 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DotnetCleanArch.Api.Middleware;
 
-internal sealed class GlobalExceptionHandler : IExceptionHandler
+internal sealed class GlobalExceptionHandler(
+    ILogger<GlobalExceptionHandler> logger,
+    IHostEnvironment environment) : IExceptionHandler
 {
-    private readonly ILogger<GlobalExceptionHandler> _logger;
-    private readonly IHostEnvironment _environment;
-
-    public GlobalExceptionHandler(
-        ILogger<GlobalExceptionHandler> logger,
-        IHostEnvironment environment)
-    {
-        _logger = logger;
-        _environment = environment;
-    }
-
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "Unhandled exception occurred");
+        logger.LogError(exception, "Unhandled exception occurred");
 
         var problemDetails = new ProblemDetails
         {
@@ -30,7 +21,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             Type = "https://httpstatuses.com/500"
         };
 
-        if (_environment.IsDevelopment())
+        if (environment.IsDevelopment())
         {
             problemDetails.Detail = exception.Message;
         }

@@ -10,12 +10,8 @@ namespace DotnetCleanArch.Api.Controllers;
 /// <summary>
 /// Manages product resources.
 /// </summary>
-public sealed class ProductsController : ApiController
+public sealed class ProductsController(ISender sender) : ApiController(sender)
 {
-    public ProductsController(ISender sender) : base(sender)
-    {
-    }
-
     /// <summary>
     /// Gets a product by its unique identifier.
     /// </summary>

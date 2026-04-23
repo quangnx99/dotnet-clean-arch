@@ -4,29 +4,23 @@ using Mediator;
 
 namespace DotnetCleanArch.Application.Abstractions.Behaviors;
 
-public sealed class ValidationBehavior<TMessage, TResponse> : IPipelineBehavior<TMessage, TResponse>
+public sealed class ValidationBehavior<TMessage, TResponse>(
+    IEnumerable<IValidator<TMessage>> validators) : IPipelineBehavior<TMessage, TResponse>
     where TMessage : IMessage
 {
-    private readonly IEnumerable<IValidator<TMessage>> _validators;
-
-    public ValidationBehavior(IEnumerable<IValidator<TMessage>> validators)
-    {
-        _validators = validators;
-    }
-
     public async ValueTask<TResponse> Handle(
         TMessage message,
         CancellationToken cancellationToken,
         MessageHandlerDelegate<TMessage, TResponse> next)
     {
-        if (!_validators.Any())
+        if (!validators.Any())
         {
             return await next(message, cancellationToken);
         }
 
         var context = new ValidationContext<TMessage>(message);
         var validationResults = await Task.WhenAll(
-            _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+            validators.Select(v => v.ValidateAsync(context, cancellationToken)));
 
         var failures = validationResults
             .SelectMany(r => r.Errors)

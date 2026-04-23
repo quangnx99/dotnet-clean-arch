@@ -4,22 +4,16 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace DotnetCleanArch.Infrastructure.Caching;
 
-internal sealed class CacheService : ICacheService
+internal sealed class CacheService(IDistributedCache cache) : ICacheService
 {
-    private readonly IDistributedCache _cache;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public CacheService(IDistributedCache cache)
-    {
-        _cache = cache;
-    }
-
     public async Task<T?> GetAsync<T>(string key, CancellationToken ct = default)
     {
-        var bytes = await _cache.GetAsync(key, ct);
+        var bytes = await cache.GetAsync(key, ct);
         return bytes is null ? default : JsonSerializer.Deserialize<T>(bytes, JsonOptions);
     }
 
@@ -37,11 +31,11 @@ internal sealed class CacheService : ICacheService
             options.AbsoluteExpirationRelativeToNow = expiry;
         }
 
-        await _cache.SetAsync(key, bytes, options, ct);
+        await cache.SetAsync(key, bytes, options, ct);
     }
 
     public async Task RemoveAsync(string key, CancellationToken ct = default) =>
-        await _cache.RemoveAsync(key, ct);
+        await cache.RemoveAsync(key, ct);
 
     public async Task<T> GetOrCreateAsync<T>(
         string key,
