@@ -22,25 +22,24 @@ public static class DependencyInjection
         return services;
     }
 
+    private const string DefaultConnectionName = "Default";
+
     private static IServiceCollection AddPersistence(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services
-            .AddOptions<PostgresOptions>()
-            .Bind(configuration.GetSection(PostgresOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        var connectionString = configuration.GetConnectionString(DefaultConnectionName)
+            ?? throw new InvalidOperationException(
+                $"Missing connection string 'ConnectionStrings:{DefaultConnectionName}'.");
 
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            var postgres = sp.GetRequiredService<IOptions<PostgresOptions>>().Value;
             var interceptor = sp.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
 
             options
-                .UseNpgsql(postgres.BuildConnectionString())
+                .UseNpgsql(connectionString)
                 .AddInterceptors(interceptor);
         });
 

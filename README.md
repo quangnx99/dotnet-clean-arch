@@ -72,22 +72,19 @@ dotnet run --project src/DotnetCleanArch.Api
 
 ## Environment Variables
 
-Configuration is bound to typed options via `Postgres:*` / `Redis:*` / `Jwt:*` keys.
-Use env vars with the `__` separator (e.g. `Postgres__Host`) or define them in `.env` and let docker-compose expand.
+Postgres uses the standard `ConnectionStrings:Default` key.
+Redis is bound to a typed `Redis` section so individual fields (host/port/password/ssl) can be overridden separately.
 
 | Variable | Description | Default |
 |---|---|---|
-| `POSTGRES_HOST` | PostgreSQL host | `localhost` |
-| `POSTGRES_PORT` | PostgreSQL port | `5432` |
-| `POSTGRES_DB` | Database name | `dotnetcleanarch` |
-| `POSTGRES_USER` | Username | `postgres` |
-| `POSTGRES_PASSWORD` | Password | _(required)_ |
-| `REDIS_HOST` | Redis host | `localhost` |
-| `REDIS_PORT` | Redis port | `6379` |
-| `REDIS_PASSWORD` | Redis password (optional) | _(empty)_ |
-| `JWT_ISSUER` | JWT token issuer | `dotnet-clean-arch` |
-| `JWT_AUDIENCE` | JWT token audience | `dotnet-clean-arch` |
-| `JWT_SECRET` | JWT signing key (32+ chars) | _(required)_ |
+| `ConnectionStrings__Default` | Postgres connection string | `Host=localhost;Port=5432;...` |
+| `Redis__Host` | Redis host | `localhost` |
+| `Redis__Port` | Redis port | `6379` |
+| `Redis__Password` | Redis password (optional) | _(empty)_ |
+| `Redis__Ssl` | Use TLS | `false` |
+| `Jwt__Issuer` | JWT token issuer | `dotnet-clean-arch` |
+| `Jwt__Audience` | JWT token audience | `dotnet-clean-arch` |
+| `Jwt__SecretKey` | JWT signing key (32+ chars) | _(required)_ |
 | `ASPNETCORE_ENVIRONMENT` | Runtime environment | `Development` |
 
 ---

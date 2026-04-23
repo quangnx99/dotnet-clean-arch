@@ -4,7 +4,6 @@ using DotnetCleanArch.Application;
 using DotnetCleanArch.Infrastructure;
 using DotnetCleanArch.Infrastructure.Authentication;
 using DotnetCleanArch.Infrastructure.Caching;
-using DotnetCleanArch.Infrastructure.Persistence;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
@@ -33,17 +32,13 @@ try
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 
-    var postgresOptions = builder.Configuration
-        .GetSection(PostgresOptions.SectionName)
-        .Get<PostgresOptions>() ?? new PostgresOptions();
-
     var redisOptions = builder.Configuration
         .GetSection(RedisOptions.SectionName)
         .Get<RedisOptions>() ?? new RedisOptions();
 
     builder.Services
         .AddHealthChecks()
-        .AddNpgSql(postgresOptions.BuildConnectionString(), name: "postgres")
+        .AddNpgSql(builder.Configuration.GetConnectionString("Default")!, name: "postgres")
         .AddRedis(redisOptions.ToConfigurationOptions().ToString(), name: "redis");
 
     var app = builder.Build();

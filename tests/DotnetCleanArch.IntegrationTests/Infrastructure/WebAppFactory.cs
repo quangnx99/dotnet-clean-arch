@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -21,13 +20,7 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var pgBuilder = new NpgsqlConnectionStringBuilder(_postgres.GetConnectionString());
-
-        builder.UseSetting("Postgres:Host", pgBuilder.Host);
-        builder.UseSetting("Postgres:Port", pgBuilder.Port.ToString());
-        builder.UseSetting("Postgres:Database", pgBuilder.Database);
-        builder.UseSetting("Postgres:Username", pgBuilder.Username);
-        builder.UseSetting("Postgres:Password", pgBuilder.Password);
+        builder.UseSetting("ConnectionStrings:Default", _postgres.GetConnectionString());
 
         // Testcontainers exposes redis as "host:port"
         var redisConn = _redis.GetConnectionString();
