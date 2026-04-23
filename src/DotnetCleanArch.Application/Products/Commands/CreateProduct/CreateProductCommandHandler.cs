@@ -8,12 +8,10 @@ namespace DotnetCleanArch.Application.Products.Commands.CreateProduct;
 internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, ProductId>
 {
     private readonly IApplicationDbContext _dbContext;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public CreateProductCommandHandler(IApplicationDbContext dbContext, IUnitOfWork unitOfWork)
+    public CreateProductCommandHandler(IApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
-        _unitOfWork = unitOfWork;
     }
 
     public async ValueTask<Result<ProductId>> Handle(
@@ -29,7 +27,7 @@ internal sealed class CreateProductCommandHandler : ICommandHandler<CreateProduc
 
         var product = result.Value;
         _dbContext.Products.Add(product);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return Result<ProductId>.Success(product.Id);
     }

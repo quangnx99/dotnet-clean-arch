@@ -33,8 +33,7 @@ UnitTests     IntegTests (WebApplicationFactory + Testcontainers)
 |  ValidationBehav.  |          |  (EF Core + Npgsql)        |
 |  LoggingBehavior   |          |                            |
 |  ICacheService ----+--------> |  CacheService (Redis)      |
-|  IUnitOfWork   ----+--------> |  UnitOfWork                |
-|  IAppDbContext ----+--------> |  ApplicationDbContext       |
+|  IAppDbContext ----+--------> |  ApplicationDbContext      |
 |                    |          |  JwtOptions / AddJwtAuth   |
 +--------+-----------+          +----------------------------+
          |
