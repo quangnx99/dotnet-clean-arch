@@ -2,9 +2,9 @@
 name: dotnet-clean-arch
 description: >
   Bootstrap a new .NET 8 Clean Architecture project from the
-  dotnet-clean-arch template repository. Use when the user asks to start
-  a new .NET project, create a .NET Clean Architecture scaffold, or
-  mentions /dotnet-clean-arch.
+  DotnetCleanArch.Template via the `dotnet new` CLI. Use when the user
+  asks to start a new .NET project, create a .NET Clean Architecture
+  scaffold, or mentions /dotnet-clean-arch.
 triggers:
   - /dotnet-clean-arch
   - "new .NET project"
@@ -14,112 +14,72 @@ triggers:
 
 # Skill: dotnet-clean-arch
 
-Bootstrap a production-ready .NET 8 Clean Architecture project by cloning
-the template and renaming every occurrence of `DotnetCleanArch` to a new
-project name.
+Scaffold a production-ready .NET 8 Clean Architecture project using the
+official `dotnet new` template engine. No file-by-file rename, no
+PowerShell hacks — Microsoft's template engine handles namespaces,
+filenames, sln entries, and content substitution natively.
 
 ## Arguments (prompt if missing)
 
 | Argument | Description | Example |
 |---|---|---|
-| `TARGET_DIR` | Absolute path for the new project | `D:\Projects\MyService` |
-| `NEW_NAME` | PascalCase project name (replaces `DotnetCleanArch`) | `OrderService` |
-| `GITHUB_OWNER` | GitHub username or org for the new repo badges / remote | `acme-corp` |
-
-Optional env override:
-- `DOTNET_CLEAN_ARCH_TEMPLATE` — local path to a cloned template. If set,
-  the skill copies from disk instead of calling `git clone`. Useful for
-  offline or air-gapped environments.
+| `NEW_NAME` | PascalCase project name (becomes namespace + sln name) | `OrderService` |
+| `TARGET_DIR` | Absolute path for the new project | `D:\Projects\OrderService` |
+| `GITHUB_OWNER` | GitHub username/org for badges + remote | `acme-corp` |
 
 ## Steps
 
 ### Step 0 — Gather arguments
 
-If any argument is missing, ask the user before proceeding. Do NOT proceed
-with placeholder values.
+If any argument is missing, ask the user. Do NOT proceed with placeholders.
 
-Compute derived values:
-- `NEW_NAME_KEBAB` = `NEW_NAME` converted to lowercase-kebab-case
-  (e.g. `OrderService` → `order-service`)
+### Step 1 — Ensure the template is installed
 
-### Step 1 — Obtain the template
-
-**Option A — Clone from GitHub (default):**
-```powershell
-git clone https://github.com/quangnx99/dotnet-clean-arch.git <TARGET_DIR>
-```
-_(bash: same command.)_
-
-**Option B — Local copy fallback** (when `DOTNET_CLEAN_ARCH_TEMPLATE` is set
-or the clone fails):
-
-```powershell
-$source = $env:DOTNET_CLEAN_ARCH_TEMPLATE
-$dest = "<TARGET_DIR>"
-New-Item -ItemType Directory -Force -Path $dest | Out-Null
-Copy-Item -Path "$source\*" -Destination $dest -Recurse -Exclude ".git","openspec"
+Check if `clean-arch` short name is available:
+```bash
+dotnet new list clean-arch
 ```
 
-After obtaining: verify `<TARGET_DIR>\DotnetCleanArch.sln` exists.
+If missing, install ONE of the following:
 
-### Step 2 — Delete existing .git
-
-```powershell
-Remove-Item -Recurse -Force "<TARGET_DIR>\.git" -ErrorAction SilentlyContinue
-```
-_(bash: `rm -rf <TARGET_DIR>/.git`)_
-
-### Step 3 — Rename files and folders
-
-Walk `<TARGET_DIR>` **depth-first** (longest path first — avoids renaming a
-parent before its children).
-
-```powershell
-Get-ChildItem -Path "<TARGET_DIR>" -Recurse -Filter "*DotnetCleanArch*" |
-  Sort-Object { $_.FullName.Length } -Descending |
-  ForEach-Object {
-    $newName = $_.Name -replace 'DotnetCleanArch', '<NEW_NAME>'
-    Rename-Item -Path $_.FullName -NewName $newName -ErrorAction Stop
-  }
+**A. From local clone (preferred during development):**
+```bash
+git clone https://github.com/quangnx99/dotnet-clean-arch.git /tmp/dotnet-clean-arch
+dotnet new install /tmp/dotnet-clean-arch
 ```
 
-### Step 4 — Replace content in all text files
-
-Target extensions:
-`.cs`, `.csproj`, `.sln`, `.md`, `.yml`, `.yaml`, `.json`, `.props`,
-`.targets`, `.editorconfig`, `.gitignore`, `.dockerignore`, `Dockerfile`,
-`.env*`
-
-Apply substitutions **in this order**:
-
-1. `DotnetCleanArch` → `<NEW_NAME>`
-2. `dotnet-clean-arch` → `<NEW_NAME_KEBAB>`
-3. `quangnx99/<NEW_NAME_KEBAB>` → `<GITHUB_OWNER>/<NEW_NAME_KEBAB>`
-
-```powershell
-$extensions = @("*.cs","*.csproj","*.sln","*.md","*.yml","*.yaml",
-                "*.json","*.props","*.targets","*.editorconfig",
-                "*.gitignore","*.dockerignore","Dockerfile","*.env*")
-Get-ChildItem -Path "<TARGET_DIR>" -Recurse -Include $extensions |
-  ForEach-Object {
-    $content = Get-Content $_.FullName -Raw -Encoding UTF8
-    $content = $content -replace 'DotnetCleanArch', '<NEW_NAME>'
-    $content = $content -replace 'dotnet-clean-arch', '<NEW_NAME_KEBAB>'
-    $content = $content -replace 'quangnx99/<NEW_NAME_KEBAB>', '<GITHUB_OWNER>/<NEW_NAME_KEBAB>'
-    Set-Content -Path $_.FullName -Value $content -Encoding UTF8 -NoNewline
-  }
+**B. From NuGet (once published):**
+```bash
+dotnet new install DotnetCleanArch.Template
 ```
 
-### Step 5 — Re-initialise git
+### Step 2 — Scaffold the project
 
-```powershell
-Set-Location <TARGET_DIR>
+```bash
+dotnet new clean-arch \
+  --name <NEW_NAME> \
+  --githubOwner <GITHUB_OWNER> \
+  --output <TARGET_DIR>
+```
+
+The template engine automatically:
+- Replaces `DotnetCleanArch` → `<NEW_NAME>` in every file, namespace, sln entry
+- Replaces `dotnet-clean-arch` → `<kebab-case of NEW_NAME>` (e.g. `OrderService` → `order-service`)
+- Replaces `quangnx99` → `<GITHUB_OWNER>`
+- Renames every file/folder containing `DotnetCleanArch`
+- Excludes `bin/`, `obj/`, `.git/`, `openspec/`, `logs/`, `.idea/`, `.vs/`
+- Runs `dotnet restore` post-action
+
+### Step 3 — Initialise git
+
+```bash
+cd <TARGET_DIR>
 git init -b main
 git add -A
 git commit -m "chore: scaffold from dotnet-clean-arch template"
 ```
 
-### Step 6 — Print next steps
+### Step 4 — Print next steps
 
 ```
 Project scaffolded at <TARGET_DIR>
@@ -140,5 +100,17 @@ Next steps:
   6. Open Swagger UI:
        http://localhost:5080/swagger
   7. Create the GitHub repo and push:
-       gh repo create <GITHUB_OWNER>/<NEW_NAME_KEBAB> --public --source=. --push
+       gh repo create <GITHUB_OWNER>/<kebab-name> --public --source=. --push
+```
+
+## Updating / uninstalling the template
+
+```bash
+# Update from local clone after `git pull`
+dotnet new install /tmp/dotnet-clean-arch --force
+
+# Uninstall
+dotnet new uninstall /tmp/dotnet-clean-arch
+# or
+dotnet new uninstall DotnetCleanArch.Template
 ```

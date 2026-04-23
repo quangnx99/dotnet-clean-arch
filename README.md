@@ -89,16 +89,43 @@ Redis is bound to a typed `Redis` section so individual fields (host/port/passwo
 
 ---
 
-## Bootstrap a new project via Claude Code skill
+## Bootstrap a new project from this template
 
-This repo ships a ready-to-install Claude Code skill that clones + renames
-the template into a fresh project in one command.
+This repo is published as a `dotnet new` template (`clean-arch`).
 
-**Install (user scope, once per machine):**
+### Quick start (CLI only)
+
+```bash
+# 1. Install the template (once per machine)
+git clone https://github.com/quangnx99/dotnet-clean-arch.git ~/src/dotnet-clean-arch
+dotnet new install ~/src/dotnet-clean-arch
+# or, once published to NuGet:
+# dotnet new install DotnetCleanArch.Template
+
+# 2. Scaffold a new project
+dotnet new clean-arch \
+  --name OrderService \
+  --githubOwner acme-corp \
+  --output ./OrderService
+
+# 3. Init git
+cd OrderService && git init -b main && git add -A && git commit -m "init"
+```
+
+The template engine renames every `DotnetCleanArch` → `OrderService`
+(namespaces, file names, sln entries) and `dotnet-clean-arch` →
+`order-service` (kebab-case, used in URLs/badges). It also runs
+`dotnet restore` automatically.
+
+### Via Claude Code skill
+
+This repo also ships a Claude Code skill at
+[`.claude/skills/dotnet-clean-arch/`](./.claude/skills/dotnet-clean-arch/)
+that wraps the CLI flow — Claude prompts for the 3 args, runs the
+commands, and prints next steps.
 
 ```powershell
-# Windows
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\dotnet-clean-arch" | Out-Null
+# Windows — install once per machine
 Copy-Item ".\.claude\skills\dotnet-clean-arch\SKILL.md" `
           "$env:USERPROFILE\.claude\skills\dotnet-clean-arch\SKILL.md" -Force
 ```
@@ -109,16 +136,13 @@ mkdir -p ~/.claude/skills/dotnet-clean-arch
 cp .claude/skills/dotnet-clean-arch/SKILL.md ~/.claude/skills/dotnet-clean-arch/SKILL.md
 ```
 
-**Use it:**
+Then in Claude:
 ```
 /dotnet-clean-arch
 ```
-Claude will ask for `TARGET_DIR`, `NEW_NAME`, `GITHUB_OWNER`, then clone,
-rename every `DotnetCleanArch` → your name, reset git history, and print
-next steps.
 
-See [`.claude/skills/dotnet-clean-arch/README.md`](.claude/skills/dotnet-clean-arch/README.md)
-for full details, offline install, and uninstall.
+See [`.claude/skills/dotnet-clean-arch/README.md`](./.claude/skills/dotnet-clean-arch/README.md)
+for full install / verify / update / uninstall flows.
 
 ---
 

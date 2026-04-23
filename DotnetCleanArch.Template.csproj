@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>DotnetCleanArch.Template</PackageId>
+    <Title>.NET 8 Clean Architecture Template</Title>
+    <Authors>quangnx99</Authors>
+    <Description>Production-ready .NET 8 Clean Architecture template with Postgres, Redis, Mediator, FluentValidation, Serilog, JWT, Swashbuckle, health checks, Docker, GitHub Actions CI, and Testcontainers.</Description>
+    <PackageTags>dotnet;template;clean-architecture;cqrs;ddd;postgres;redis;aspnetcore</PackageTags>
+    <Version>1.0.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/quangnx99/dotnet-clean-arch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/quangnx99/dotnet-clean-arch</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <TargetFramework>net8.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include=".template.config\**\*" />
+    <Content Include="src\**\*" Exclude="src\**\bin\**;src\**\obj\**" />
+    <Content Include="tests\**\*" Exclude="tests\**\bin\**;tests\**\obj\**" />
+    <Content Include=".github\**\*" />
+    <Content Include="DotnetCleanArch.sln" />
+    <Content Include=".editorconfig" />
+    <Content Include=".gitignore" />
+    <Content Include=".dockerignore" />
+    <Content Include="Directory.Build.props" />
+    <Content Include="Directory.Packages.props" />
+    <Content Include="global.json" />
+    <Content Include="Dockerfile" />
+    <Content Include="docker-compose.yml" />
+    <Content Include=".env.example" />
+    <Content Include="LICENSE" />
+    <Content Include="README.md" />
+    <Content Include="CONTRIBUTING.md" />
+
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

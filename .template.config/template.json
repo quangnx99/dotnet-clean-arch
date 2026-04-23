@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "quangnx99",
+  "classifications": [ "Web", "API", "Clean Architecture", "CQRS", "DDD" ],
+  "identity": "DotnetCleanArch.Template",
+  "name": "Clean Architecture Solution (.NET 8, Postgres, Redis)",
+  "shortName": "clean-arch",
+  "description": "A production-ready .NET 8 Clean Architecture template with Postgres, Redis, Mediator (martinothamar), FluentValidation, Serilog, JWT, Swashbuckle, health checks, Docker, GitHub Actions CI, xUnit + Testcontainers.",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "DotnetCleanArch",
+  "preferNameDirectory": true,
+  "symbols": {
+    "githubOwner": {
+      "type": "parameter",
+      "datatype": "string",
+      "replaces": "quangnx99",
+      "defaultValue": "your-username",
+      "description": "GitHub owner used in README badges and repository URLs."
+    },
+    "kebabName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "kebabCaseTransform",
+      "replaces": "dotnet-clean-arch",
+      "description": "Kebab-case of the solution name. Replaces 'dotnet-clean-arch' throughout."
+    }
+  },
+  "forms": {
+    "kebabCaseTransform": {
+      "identifier": "chain",
+      "steps": [ "kebabSplit", "toLower" ]
+    },
+    "kebabSplit": {
+      "identifier": "replace",
+      "pattern": "(?<=[a-z0-9])(?=[A-Z])|[\\s_]+",
+      "replacement": "-"
+    },
+    "toLower": { "identifier": "lowerCase" }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            "bin/**",
+            "obj/**",
+            "**/bin/**",
+            "**/obj/**",
+            ".git/**",
+            ".vs/**",
+            ".idea/**",
+            "logs/**",
+            "**/logs/**",
+            "openspec/**",
+            "*.user",
+            ".env",
+            "DotnetCleanArch.Template.csproj"
+          ]
+        }
+      ]
+    }
+  ],
+  "SpecialCustomOperations": {
+    "**/*.yml": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "#if" ],
+            "else": [ "#else" ],
+            "elseif": [ "#elseif" ],
+            "endif": [ "#endif" ],
+            "actionableIf": [ "##if" ],
+            "actionableElse": [ "##else" ],
+            "actionableElseif": [ "##elseif" ],
+            "actionableEndif": [ "##endif" ],
+            "trim": true,
+            "wholeLine": true,
+            "evaluator": "C++"
+          }
+        }
+      ]
+    }
+  },
+  "primaryOutputs": [
+    { "path": "DotnetCleanArch.sln" }
+  ],
+  "postActions": [
+    {
+      "id": "restore",
+      "description": "Restore NuGet packages",
+      "manualInstructions": [ { "text": "Run 'dotnet restore'" } ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}
