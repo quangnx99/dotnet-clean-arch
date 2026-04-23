@@ -3,8 +3,62 @@
 ![CI](https://github.com/quangnx99/dotnet-clean-arch/workflows/CI/badge.svg)
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![template](https://img.shields.io/badge/dotnet_new-clean--arch-blue?logo=dotnet)
 
 Production-ready .NET 8 Clean Architecture template. No ceremony, no AutoMapper, no MediatR licence risk — just a fast, auditable, AOT-friendly foundation for backend services.
+
+---
+
+## Create a New Project
+
+> **One command to scaffold a fully-configured .NET 8 backend.**
+> The template renames namespaces, files, badges, and runs `dotnet restore` automatically.
+
+### Option A — Claude Code (recommended)
+
+```powershell
+# Download and install the skill (no clone needed)
+New-Item -Force -ItemType Directory ~/.claude/skills/dotnet-clean-arch | Out-Null
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/quangnx99/dotnet-clean-arch/main/.claude/skills/dotnet-clean-arch/SKILL.md" -OutFile ~/.claude/skills/dotnet-clean-arch/SKILL.md
+```
+
+Then open Claude Code and say:
+
+```
+/dotnet-clean-arch
+```
+
+> **What happens:** Claude checks/installs the dotnet template, asks for your
+> project name, scaffolds the solution, inits git, verifies the build, and
+> prints next steps — all hands-free.
+
+### Option B — CLI only
+
+```bash
+# 1. Install the dotnet template (once per machine)
+git clone https://github.com/quangnx99/dotnet-clean-arch.git ~/src/dotnet-clean-arch
+dotnet new install ~/src/dotnet-clean-arch
+
+# 2. Scaffold
+dotnet new clean-arch \
+  --name OrderService \
+  --githubOwner acme-corp \
+  --output ./OrderService
+
+# 3. Init git
+cd OrderService && git init -b main && git add -A && git commit -m "init"
+```
+
+<details>
+<summary><strong>NuGet install (when published)</strong></summary>
+
+```bash
+dotnet new install DotnetCleanArch.Template
+```
+</details>
+
+> See [`.claude/skills/dotnet-clean-arch/README.md`](./.claude/skills/dotnet-clean-arch/README.md)
+> for full skill install / verify / update / uninstall flows.
 
 ---
 
@@ -86,63 +140,6 @@ Redis is bound to a typed `Redis` section so individual fields (host/port/passwo
 | `Jwt__Audience` | JWT token audience | `dotnet-clean-arch` |
 | `Jwt__SecretKey` | JWT signing key (32+ chars) | _(required)_ |
 | `ASPNETCORE_ENVIRONMENT` | Runtime environment | `Development` |
-
----
-
-## Bootstrap a new project from this template
-
-This repo is published as a `dotnet new` template (`clean-arch`).
-
-### Quick start (CLI only)
-
-```bash
-# 1. Install the template (once per machine)
-git clone https://github.com/quangnx99/dotnet-clean-arch.git ~/src/dotnet-clean-arch
-dotnet new install ~/src/dotnet-clean-arch
-# or, once published to NuGet:
-# dotnet new install DotnetCleanArch.Template
-
-# 2. Scaffold a new project
-dotnet new clean-arch \
-  --name OrderService \
-  --githubOwner acme-corp \
-  --output ./OrderService
-
-# 3. Init git
-cd OrderService && git init -b main && git add -A && git commit -m "init"
-```
-
-The template engine renames every `DotnetCleanArch` → `OrderService`
-(namespaces, file names, sln entries) and `dotnet-clean-arch` →
-`order-service` (kebab-case, used in URLs/badges). It also runs
-`dotnet restore` automatically.
-
-### Via Claude Code skill
-
-This repo also ships a Claude Code skill at
-[`.claude/skills/dotnet-clean-arch/`](./.claude/skills/dotnet-clean-arch/)
-that wraps the CLI flow — Claude prompts for the 3 args, runs the
-commands, and prints next steps.
-
-```powershell
-# Windows — install once per machine
-Copy-Item ".\.claude\skills\dotnet-clean-arch\SKILL.md" `
-          "$env:USERPROFILE\.claude\skills\dotnet-clean-arch\SKILL.md" -Force
-```
-
-```bash
-# macOS / Linux
-mkdir -p ~/.claude/skills/dotnet-clean-arch
-cp .claude/skills/dotnet-clean-arch/SKILL.md ~/.claude/skills/dotnet-clean-arch/SKILL.md
-```
-
-Then in Claude:
-```
-/dotnet-clean-arch
-```
-
-See [`.claude/skills/dotnet-clean-arch/README.md`](./.claude/skills/dotnet-clean-arch/README.md)
-for full install / verify / update / uninstall flows.
 
 ---
 
