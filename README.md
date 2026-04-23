@@ -72,12 +72,19 @@ dotnet run --project src/DotnetCleanArch.Api
 
 ## Environment Variables
 
+Configuration is bound to typed options via `Postgres:*` / `Redis:*` / `Jwt:*` keys.
+Use env vars with the `__` separator (e.g. `Postgres__Host`) or define them in `.env` and let docker-compose expand.
+
 | Variable | Description | Default |
 |---|---|---|
-| `POSTGRES_DB` | PostgreSQL database name | `dotnetcleanarch` |
-| `POSTGRES_USER` | PostgreSQL username | `postgres` |
-| `POSTGRES_PASSWORD` | PostgreSQL password | _(required)_ |
-| `REDIS_CONNECTION_STRING` | Redis connection string | `localhost:6379` |
+| `POSTGRES_HOST` | PostgreSQL host | `localhost` |
+| `POSTGRES_PORT` | PostgreSQL port | `5432` |
+| `POSTGRES_DB` | Database name | `dotnetcleanarch` |
+| `POSTGRES_USER` | Username | `postgres` |
+| `POSTGRES_PASSWORD` | Password | _(required)_ |
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_PASSWORD` | Redis password (optional) | _(empty)_ |
 | `JWT_ISSUER` | JWT token issuer | `dotnet-clean-arch` |
 | `JWT_AUDIENCE` | JWT token audience | `dotnet-clean-arch` |
 | `JWT_SECRET` | JWT signing key (32+ chars) | _(required)_ |

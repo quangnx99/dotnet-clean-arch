@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 
@@ -20,6 +21,21 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        var pgBuilder = new NpgsqlConnectionStringBuilder(_postgres.GetConnectionString());
+
+        builder.UseSetting("Postgres:Host", pgBuilder.Host);
+        builder.UseSetting("Postgres:Port", pgBuilder.Port.ToString());
+        builder.UseSetting("Postgres:Database", pgBuilder.Database);
+        builder.UseSetting("Postgres:Username", pgBuilder.Username);
+        builder.UseSetting("Postgres:Password", pgBuilder.Password);
+
+        // Testcontainers exposes redis as "host:port"
+        var redisConn = _redis.GetConnectionString();
+        var parts = redisConn.Split(':');
+        builder.UseSetting("Redis:Host", parts[0]);
+        builder.UseSetting("Redis:Port", parts.Length > 1 ? parts[1] : "6379");
+        builder.UseSetting("Redis:Password", string.Empty);
+
         builder.ConfigureServices(services =>
         {
             // Remove existing DbContext registration
@@ -31,15 +47,11 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 services.Remove(dbContextDescriptor);
             }
 
-            // Override with test Postgres connection
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(_postgres.GetConnectionString());
             });
         });
-
-        builder.UseSetting("ConnectionStrings:Postgres", _postgres.GetConnectionString());
-        builder.UseSetting("ConnectionStrings:Redis", _redis.GetConnectionString());
     }
 
     public async Task InitializeAsync()

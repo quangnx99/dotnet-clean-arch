@@ -4,11 +4,21 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - POSTGRES_CONNECTION_STRING=Host=postgres;Port=5432;Database=${POSTGRES_DB:-dotnetcleanarch};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
-      - REDIS_CONNECTION_STRING=redis:6379
-      - JWT_ISSUER=${JWT_ISSUER:-dotnet-clean-arch}
-      - JWT_AUDIENCE=${JWT_AUDIENCE:-dotnet-clean-arch}
-      - JWT_SECRET=${JWT_SECRET:-change-me-in-production-use-32-chars}
+      # Postgres
+      - Postgres__Host=postgres
+      - Postgres__Port=5432
+      - Postgres__Database=${POSTGRES_DB:-dotnetcleanarch}
+      - Postgres__Username=${POSTGRES_USER:-postgres}
+      - Postgres__Password=${POSTGRES_PASSWORD:-postgres}
+      # Redis
+      - Redis__Host=redis
+      - Redis__Port=6379
+      - Redis__Password=${REDIS_PASSWORD:-}
+      # JWT
+      - Jwt__Issuer=${JWT_ISSUER:-dotnet-clean-arch}
+      - Jwt__Audience=${JWT_AUDIENCE:-dotnet-clean-arch}
+      - Jwt__SecretKey=${JWT_SECRET:-change-me-in-production-use-32-chars}
+      # Runtime
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
     depends_on:
       postgres:
@@ -18,6 +28,8 @@ services:
 
   postgres:
     image: postgres:16-alpine
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-dotnetcleanarch}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -32,10 +44,21 @@ services:
 
   redis:
     image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: >
+      sh -c '
+      if [ -n "$$REDIS_PASSWORD" ]; then
+        redis-server --requirepass "$$REDIS_PASSWORD";
+      else
+        redis-server;
+      fi'
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli ${REDIS_PASSWORD:+-a $$REDIS_PASSWORD} ping"]
       interval: 10s
       timeout: 5s
       retries: 5
