@@ -89,6 +89,39 @@ Redis is bound to a typed `Redis` section so individual fields (host/port/passwo
 
 ---
 
+## Bootstrap a new project via Claude Code skill
+
+This repo ships a ready-to-install Claude Code skill that clones + renames
+the template into a fresh project in one command.
+
+**Install (user scope, once per machine):**
+
+```powershell
+# Windows
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\dotnet-clean-arch" | Out-Null
+Copy-Item ".\.claude\skills\dotnet-clean-arch\SKILL.md" `
+          "$env:USERPROFILE\.claude\skills\dotnet-clean-arch\SKILL.md" -Force
+```
+
+```bash
+# macOS / Linux
+mkdir -p ~/.claude/skills/dotnet-clean-arch
+cp .claude/skills/dotnet-clean-arch/SKILL.md ~/.claude/skills/dotnet-clean-arch/SKILL.md
+```
+
+**Use it:**
+```
+/dotnet-clean-arch
+```
+Claude will ask for `TARGET_DIR`, `NEW_NAME`, `GITHUB_OWNER`, then clone,
+rename every `DotnetCleanArch` → your name, reset git history, and print
+next steps.
+
+See [`.claude/skills/dotnet-clean-arch/README.md`](.claude/skills/dotnet-clean-arch/README.md)
+for full details, offline install, and uninstall.
+
+---
+
 ## Project Structure
 
 | Project | Purpose |
