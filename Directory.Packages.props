@@ -5,7 +5,7 @@
   <ItemGroup>
     <!-- Mediator (martinothamar) -->
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
-    <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
+    <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />
     <!-- Validation -->
     <PackageVersion Include="FluentValidation" Version="11.11.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
